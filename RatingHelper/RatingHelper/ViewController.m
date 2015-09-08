@@ -11,7 +11,7 @@
 
 @interface ViewController ()<UIAlertViewDelegate>
 
-@property(nonatomic, strong)RatingHelper *ratingHelper;
+
 
 @end
 
@@ -27,14 +27,8 @@
     // Dispose of any resources that can be recreated.
 }
 - (IBAction)rating:(id)sender {
-    self.ratingHelper = [[RatingHelper alloc] init];
-    
-    
-    [self.ratingHelper show];
+
 }
 
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    
-}
 @end

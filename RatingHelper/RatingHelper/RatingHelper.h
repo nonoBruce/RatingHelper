@@ -10,6 +10,7 @@
 
 @interface RatingHelper : NSObject
 
+
 - (void)show;
 
 @end

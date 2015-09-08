@@ -7,9 +7,9 @@
 //
 
 #import "AppDelegate.h"
-
+#import "RatingHelper.h"
 @interface AppDelegate ()
-
+@property(nonatomic, strong)RatingHelper *ratingHelper;
 @end
 
 @implementation AppDelegate
@@ -17,6 +17,12 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    
+    
+    self.ratingHelper = [[RatingHelper alloc] init];
+    [self.ratingHelper show];
+    
     return YES;
 }
 
@@ -36,6 +42,8 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+
+  
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
