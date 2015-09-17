@@ -27,7 +27,7 @@
     // Dispose of any resources that can be recreated.
 }
 - (IBAction)rating:(id)sender {
-
+    [[[RatingHelper alloc] init] rating];
 }
 
 

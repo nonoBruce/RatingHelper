@@ -10,7 +10,13 @@
 
 @interface RatingHelper : NSObject
 
-
+//显示AlertView
 - (void)show;
+
+//直接跳转评分
+- (void)rating;
+
+//APP事件，累计的事件
+- (void)appAction;
 
 @end

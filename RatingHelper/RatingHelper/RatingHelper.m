@@ -4,11 +4,14 @@
 //
 //  Created by yanws on 15/9/7.
 //
+//  提醒用户跳转到appstore上去评分
+//  1、在用户分享一定次数后
+//  2、登陆次数到达一定数量（这个策略不是很好）
+//  
 //
 
 #define USERDEFAULT_NOREMIND    @"USERDEFAULT_NOREMIND"//不再提醒
 #define USERDEFAULT_REMINDLATER @"USERDEFAULT_REMINDLATER"//下次再说
-//#define USERDEFAULT_RATED       @"USERDEFAULT_RATED"//已经评论过了,操作和noremind的一样样
 #define USERDEFAULT_LAUNCHNUM   @"USERDEFAULT_LAUNCHNUM"//用户启动应用的次数
 
 #define USERDEFAULT_LAUNCHNUM_THRESHOLD   1    //启动二十次后，弹出评价
@@ -19,41 +22,39 @@
 
 @property(nonatomic, strong)UIAlertView *alertView;
 
-//@property(nonatomic, assign)NSInteger launchNum;
-
 @end
 
 @implementation RatingHelper
 
 - (instancetype)init {
     if(self = [super init]) {
-        self.alertView = [[UIAlertView alloc] initWithTitle:@"给“Color Fun”打分" message:@"Color Fun需要您的鼓励" delegate:self cancelButtonTitle:@"赞一个" otherButtonTitles:@"下次再说",@"不再提醒", nil];
+        [self initConfig];
     }
     return self;
 }
 
-- (void)show{
-    
-    
-    
+- (void)initConfig{
     if(![self isNoremind]){
-        //监听启动
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(gameLaunch)
-                                                     name:UIApplicationDidFinishLaunchingNotification
-                                                   object:nil];
+       
         
         //设置默认值
         [self userDefaultsInit];
-        
-        
-        //设置
-        if([self launchNum]>USERDEFAULT_LAUNCHNUM_THRESHOLD){
+    }
+    
+}
 
-            
+- (void)show{
+    
+    if(![self isNoremind]){
+        //监听启动
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appAction)
+                                                     name:UIApplicationDidFinishLaunchingNotification
+                                                   object:nil];
+        
+        if([self launchNum]>=USERDEFAULT_LAUNCHNUM_THRESHOLD){
+             self.alertView = [[UIAlertView alloc] initWithTitle:@"给“Color Fun”打分" message:@"Color Fun需要您的鼓励" delegate:self cancelButtonTitle:@"赞一个" otherButtonTitles:@"下次再说",@"不再提醒", nil];
             [self.alertView show];
         }
-    }else{
-        
     }
     
 }
@@ -95,19 +96,13 @@
     //appstre rating view
     NSString *str = [NSString stringWithFormat:@"http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=%@&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8",appID];
     
+    
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:str]];
 }
 
 
 
 #pragma mark - NSUserDefaults
-
-//取值
-
-//- (BOOL)isRated {
-//    BOOL isRated = [[NSUserDefaults standardUserDefaults] boolForKey:USERDEFAULT_RATED];
-//    return isRated;
-//}
 
 - (BOOL)isNoremind {
     
@@ -124,12 +119,7 @@
 - (NSInteger)launchNum {
     
     NSInteger launchNum = [[NSUserDefaults standardUserDefaults] integerForKey:USERDEFAULT_LAUNCHNUM];
-    return launchNum;
-    
-    //    NSInteger imageNetVersion = [[NSUserDefaults standardUserDefaults] integerForKey:USERDEFAULT_IMAGEVERSION];
-    //    NSNumber *versionNum = [NSNumber numberWithInteger:imageNetVersion];
-    //    return versionNum;
-}
+    return launchNum;}
 
 
 //===注册默认设置
@@ -137,9 +127,8 @@
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     
     NSDictionary *defaultValues = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   @"1",USERDEFAULT_LAUNCHNUM,
+                                   @"0",USERDEFAULT_LAUNCHNUM,
                                    @"NO",USERDEFAULT_NOREMIND,
-//                                   @"NO",USERDEFAULT_RATED,
                                    @"NO",USERDEFAULT_REMINDLATER,
                                    nil];
     
@@ -147,26 +136,15 @@
 }
 
 - (void)resetUserDefaultInit{
-//    [self setRated:NO];
-//
-//    [self setRemindLater:NO];
     [self setNoremind:NO];
     [self setLaunchNum:0];
     
 }
 
 
-//- (void)setRated:(BOOL)isRated {
-//    [[NSUserDefaults standardUserDefaults] setBool:isRated forKey:USERDEFAULT_RATED];
-//}
-
 - (void)setNoremind:(BOOL)isNoremind {
     [[NSUserDefaults standardUserDefaults] setBool:isNoremind forKey:USERDEFAULT_NOREMIND];
 }
-
-//- (void)setRemindLater:(BOOL)isRemindLater {
-//    [[NSUserDefaults standardUserDefaults] setBool:isRemindLater forKey:USERDEFAULT_REMINDLATER];
-//}
 
 - (void)setLaunchNum:(NSInteger)launchNum{
     
@@ -174,16 +152,12 @@
     
 //    NSLog(@"launchNum = %d",[self launchNum]);
 }
-// *** Terminating app due to uncaught exception 'NSInvalidArgumentException', reason: '-[__NSArrayI gameLaunch]: unrecognized selector sent to instance 0x14e48be0'
-
-#pragma mark - 监听启动次数
+#pragma mark - 监听启动次数，响应的可以改为分享次数
 //启动游戏
-- (void)gameLaunch{
+- (void)appAction{
     NSInteger launchNum = [self launchNum];
     launchNum++;
     [self setLaunchNum:launchNum];
-
-//    NSLog(@"launchNum = %d",(int)launchNum);
-
+    NSLog(@"launchNum = %d",(int)launchNum);
 }
 @end
